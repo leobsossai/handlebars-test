@@ -5,23 +5,90 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style type="text/css">
+        .redText {color: red;}
+        .blueText {color: blue;}
+        .greenText {color: green;}
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
     
 </head>
 <body>
     
     <div id="output"></div>
-    <button onclick="fillTemplate()">Fill template</button>
-    
-    <script src="script.js"></script>
+
     <script id="template" type="text/x-handlebars-template">
-        <h1>{{title}}</h1>
+        <h3>Favorite {{name}} Quotes:</h3>
         <ol>
-            {{#each list}}  
-                <li>{{this.name}}</li>
-            {{/each}}   
+            {{#each quotes}}
+            <li>{{quote}}
+            {{/each}}
         </ol>
-        <p>{{footer}}</p>
+
+        {{{yogiBio}}}<br /><br />
+
+        {{makeLink "Yogi Berra Museum" "http://yogiberramuseum.org/"}}<br />
+
+        {{changeColor "Make my text red" color="blue"}}<br />
+
+        {{sayHello}}
+
+    </script>
+
+    <script type="text/javascript">
+        let quoteInfo = document.querySelector('#template').innerHTML;
+
+        let template = Handlebars.compile(quoteInfo);
+        Handlebars.registerHelper('makeLink', function(text, url){
+            text = Handlebars.Utils.escapeExpression(text);
+            url = Handlebars.Utils.escapeExpression(url);
+
+            var theLink = `<a href="${url}">${text}</a>`;
+
+            return new Handlebars.SafeString(theLink);
+        });
+
+        Handlebars.registerHelper('changeColor', function(text, options){
+            text = Handlebars.Utils.escapeExpression(text);
+
+            if(options.hash.color === "red"){
+                return new Handlebars.SafeString(`<span class='redText'>${text}</span>`);
+            } else if(options.hash.color === "blue"){
+                return new Handlebars.SafeString(`<span class='blueText'>${text}</span>`);
+            } else {
+                return new Handlebars.SafeString(`<span class='greenText'>${text}</span>`);
+            }
+        });
+
+        Handlebars.registerHelper('sayHello', function(options){
+            switch(options.data.lang) {
+                case "spanish":
+                    return "Hola";
+                    break;
+                case "french":
+                    return "Bonjour";
+                    break;
+                default:
+                    return "Hello";
+            };
+        });
+
+        let quoteData = template({
+            name: 'Yogi Berra',
+            quotes: [
+                {quote: "I never said most of the thins I said"},
+                {quote: "I never said most of the thins I said"},
+                {quote: "I never said most of the thins I said"},
+                {quote: "I never said most of the thins I said"}
+            ],
+            yogiBio : '<i>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</i>'
+        },{data:{
+            lang: "spanish"
+        }});
+
+        
+
+        document.querySelector('#output').innerHTML += quoteData;
     </script>
     
     
